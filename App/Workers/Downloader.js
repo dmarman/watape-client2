@@ -21,7 +21,7 @@ class Downloader extends Worker
 
     work()
     {
-        console.log('worker working: -', this.tasks.length);
+        console.log('downloader working: -', this.tasks.length);
         let task = this.tasks.shift();
         this.download(task.track).then(() => {
             this.send(task, this.mediator.workers.Recorder);

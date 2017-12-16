@@ -1,6 +1,7 @@
 'use strict';
 
 const Worker = require('./Worker.js');
+const Soundcard = require('../Soundcard.js');
 
 class Recorder extends Worker
 {
@@ -35,8 +36,23 @@ class Recorder extends Worker
     record(track)
     {
         return new Promise((resolve, reject) => {
-            console.log('promiseeeee');
-            return resolve();
+            const soundcard = new Soundcard();
+            let audioStream = soundcard.record();
+            let data;
+            audioStream.on('data', (chunk) => {
+                 // data += chunk;
+                console.log(this.RMS(chunk));
+
+
+                // console.log(track.name, chunk);
+            });
+
+            setTimeout(() => {
+                console.log('stopped recording');
+                //soundcard.stopRecording();
+                //return resolve();
+            }, 1000);
+
         });
     }
 
