@@ -1,0 +1,7 @@
+.idea/
+
+node_modules/
+
+Storage/Tracks/*
+Storage/Records/*
+Storage/Audio/*
