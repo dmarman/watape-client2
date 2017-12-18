@@ -4,6 +4,7 @@ const isMac = require('os').type() == 'Darwin';
 const isWin = require('os').type().indexOf('Windows') > -1;
 const EventEmitter = require('events');
 const spawn = require('child_process').spawn;
+const exec = require('child_process').exec;
 
 class Soundcard extends EventEmitter
 {
@@ -16,7 +17,7 @@ class Soundcard extends EventEmitter
         this.bitwidth = options.bitwidth || '16';
         this.encoding = options.encoding || 'signed-integer';
         this.rate = options.rate || '44100';
-        this.channels = options.channels || '1';
+        this.channels = options.channels || '2';
         this.additionalParameters = options.additionalParameters || false;
 
         if (!isWin && !isMac) {
@@ -41,9 +42,34 @@ class Soundcard extends EventEmitter
 
     }
     
-    play()
+    play(track)
     {
+        let audioOptions;
+        if(isWin){
+            audioOptions = [`./Storage/Tracks/${track.name}`, '-b', this.bitwidth, '--endian', this.endian, '-c', this.channels, '-r', this.rate, '-e', this.encoding, '-t', 'waveaudio', 'default'];
 
+            if (this.additionalParameters) {
+                audioOptions = audioOptions.concat(this.additionalParameters);
+            }
+            console.log(audioOptions);
+            this.ps = spawn('sox', audioOptions);
+        }
+
+
+        this.ps.on('exit', function (code, signal) {
+            console.log('child process exited with ' +
+                `code ${code} and signal ${signal}`);
+        });
+        this.ps.on('error', (error) => {
+            this.emit('error', error);
+        });
+        this.ps.stderr.on('error', (error) => {
+            this.emit('error', error);
+        });
+        this.ps.stderr.on('data', (info) => {
+            this.emit('info', info);
+        });
+        return this.ps.stdout;
     }
 
     record()

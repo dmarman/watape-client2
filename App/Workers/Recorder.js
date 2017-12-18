@@ -2,6 +2,7 @@
 
 const Worker = require('./Worker.js');
 const Soundcard = require('../Soundcard.js');
+const fs = require('fs');
 
 class Recorder extends Worker
 {
@@ -36,22 +37,28 @@ class Recorder extends Worker
     record(track)
     {
         return new Promise((resolve, reject) => {
+            let writeableStream = fs.createWriteStream('./App/Records', 'test.wav');
             const soundcard = new Soundcard();
+            //let player = soundcard.play(track);
             let audioStream = soundcard.record();
-            let data;
-            audioStream.on('data', (chunk) => {
-                 // data += chunk;
-                console.log(this.RMS(chunk));
+            
+            audioStream.pipe(writeableStream);
+            // audioStream.on('data', (buffer) => {
 
+                  // data = buffer;
+                // console.log(buffer);
+                // for (var i = 0, n = buffer.length; i < n; i++) {
+                    // console.log(buffer[i]);
+                // }
+                // console.log(buffer.length);
 
                 // console.log(track.name, chunk);
-            });
+            // });
 
             setTimeout(() => {
-                console.log('stopped recording');
-                //soundcard.stopRecording();
-                //return resolve();
-            }, 1000);
+                soundcard.stopRecording();
+                return resolve();
+            }, 2000);
 
         });
     }

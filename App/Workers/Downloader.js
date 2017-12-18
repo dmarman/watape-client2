@@ -40,10 +40,11 @@ class Downloader extends Worker
 
         var url  	= 'http://localhost/laravel/taptapo/public/api/track/download/' + track.id;
         var method	= 'GET';
-
-        return axios({url: url, method: method, headers: {'api-token': 'qbmETutuPqRxqcfIrPSVXGhWqRF1D3DJeLht5wTl'}, responseType: 'stream'})
+        //TODO dont know if arrayBuffer loads on memory, should we use streams and fs.writableStream instead?
+        return axios({url: url, method: method, headers: {'api-token': 'qbmETutuPqRxqcfIrPSVXGhWqRF1D3DJeLht5wTl'}, responseType: 'arraybuffer'})
             .then((response) => {
                 console.log('downloaded: ', track.id);
+                // console.log(response.data);
                 this.store(track, response.data);
             })
             .catch(function (error) {
